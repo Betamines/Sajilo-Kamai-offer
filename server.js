@@ -13,15 +13,15 @@ admin.initializeApp({
 });
 const db = admin.firestore();
 
-// १. मुख्य होम पेज (Cannot GET / फिक्स गर्न)
 app.get('/', (req, res) => {
-    res.send('<h1>सर्भर अनलाइन छ!</h1><p>यो पेज काम गरिरहेको छ।</p>');
+    res.send('<h1>सर्भर अनलाइन छ!</h1>');
 });
 
-// २. भेरिफाई रुट
+// यो नै त्यो रुट हो जसले गर्दा समस्या भइरहेको छ
 app.get('/verify/:linkId', async (req, res) => {
     try {
         const linkId = req.params.linkId;
+        console.log("Searching for link:", linkId); // यो लग्समा हेर्नुहोस्
         const doc = await db.collection('links').doc(linkId).get();
         
         if (!doc.exists) {
@@ -38,8 +38,7 @@ app.get('/verify/:linkId', async (req, res) => {
             code: code,
             sessionId: sessionId,
             linkId: linkId,
-            timestamp: new Date(),
-            ip: req.ip
+            timestamp: new Date()
         });
 
         res.send(`
@@ -50,6 +49,7 @@ app.get('/verify/:linkId', async (req, res) => {
             </div>
         `);
     } catch (error) {
+        console.error(error);
         res.status(500).send('सर्भर एरर!');
     }
 });
